@@ -1,0 +1,59 @@
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import model.Order;
+import model.Position;
+
+import java.text.DecimalFormat;
+
+public class Controller {
+
+    public ListView<Order> orderListView;
+    public ListView<Position> posListView;
+    public Label orderDateLabel;
+    public Label shippingStateLabel;
+    public Label customerNameLabel;
+    public Label productCodeLabel;
+    public Label productPriceLabel;
+
+    public Order selectedOrder = null;
+    public Position selectedPos = null;
+
+
+    public void initialize() {
+        orderListView.setItems(Order.getOrderList());
+
+        orderDateLabel.setText("");
+        shippingStateLabel.setText("");
+        customerNameLabel.setText("");
+        productCodeLabel.setText("");
+        productPriceLabel.setText("");
+    }
+
+    public void orderListViewClicked(MouseEvent mouseEvent) {
+        this.selectedOrder = orderListView.getSelectionModel().getSelectedItem();
+
+        if (this.selectedOrder != null) {
+            posListView.setItems(this.selectedOrder.loadPositions());
+
+            orderDateLabel.setText(this.selectedOrder.getOrderDate());
+            shippingStateLabel.setText(this.selectedOrder.getShippingState());
+            // get customer via lazy loading
+            customerNameLabel.setText(this.selectedOrder.getCustomer().getCustomerName());
+
+            productCodeLabel.setText("");
+            productPriceLabel.setText("");
+        }
+    }
+
+    public void posListViewClicked(MouseEvent mouseEvent) {
+        this.selectedPos = posListView.getSelectionModel().getSelectedItem();
+
+        if (this.selectedPos != null) {
+            productCodeLabel.setText(this.selectedPos.getProductCode());
+
+            DecimalFormat df = new DecimalFormat("##.##");
+            productPriceLabel.setText(df.format(this.selectedPos.getPriceEachPcs()));
+        }
+    }
+}
